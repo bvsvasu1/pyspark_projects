@@ -1,0 +1,14 @@
+Could someone please guide me on how to add a common parameter that can be shared across all datasets in a Databricks dashboard?
+
+To add a common parameter across all datasets in a Databricks dashboard, start by defining the parameter in a widget using dbutils.widgets, setting its value globally.
+Apply the parameter within SQL queries or Python scripts to ensure consistent data filtering across all datasets.
+Ensure the parameter is securely managed by restricting access using fine-grained IAM policies or role-based controls.
+Use the parameter in queries in a way that avoids injection vulnerabilities, maintaining best practices for secure code.
+This approach allows efficient sharing of the parameter across the dashboard while incorporating security considerations.
+
+Steps we took:
+
+1- define different parameters to avoid conflict per dataset
+2- tie the UI filter to these parameters on the lakeview dashboard.
+
+Ensuring the data type for all filters are the same
