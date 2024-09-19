@@ -5,6 +5,28 @@ import json
 
 # COMMAND ----------
 
+text_df = spark.read.options(header=True).text("/FileStore/tables/wordcount.txt")
+abc1 = text_df.withColumn("line", explode(split(text_df.value, " "))).groupBy("line").count()
+abc1.display()
+
+# COMMAND ----------
+
+
+
+# COMMAND ----------
+
+
+
+# COMMAND ----------
+
+
+
+# COMMAND ----------
+
+
+
+# COMMAND ----------
+
 # DBTITLE 1,Approach 1
 text_df = spark.read.options(header=True).text("/FileStore/tables/wordcount.txt")
 df_words = text_df.select(split(text_df["value"], " ").alias("words"))
@@ -23,6 +45,7 @@ word_counts.display()
 
 # COMMAND ----------
 
+# DBTITLE 1,Approach 2 UDF dict
 udf_schema = StructType([
     StructField("word", StringType(), True),
     StructField("value", IntegerType(), True)
@@ -64,6 +87,7 @@ text_df_breakup.display()
 
 # COMMAND ----------
 
+# DBTITLE 1,Approach 3 UDF json
 def word_count_2(line):
     line_split = line.split(" ")
     word_dict = {}
@@ -88,6 +112,20 @@ text_df_exploded3 = text_df_parsed3.select(
     explode(col("line_word_count_map")).alias("word", "count")
 )
 text_df_exploded3.display()
+
+# COMMAND ----------
+
+# DBTITLE 1,Approach 4 Using RDD
+text_rdd = sc.textFile("/FileStore/tables/wordcount.txt").flatMap(lambda line: line.split()).map(lambda word: (word, 1)).reduceByKey(lambda a, b: a + b)
+text_df = text_rdd.toDF()
+print(text_rdd.collect())
+text_df.display()
+
+# COMMAND ----------
+
+text_df4 = spark.read.text("/FileStore/tables/wordcount.txt")
+text_df4_rrd = text_df4.rdd#.flatMap(lambda line: line.split())
+print(text_df4_rrd.take(5))
 
 # COMMAND ----------
 
